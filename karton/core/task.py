@@ -250,7 +250,7 @@ class Task(object):
             sort_keys=True,
         )
 
-    def iterate_resources(self) -> Iterator[Tuple[str, ResourceBase]]:
+    def iterate_resources(self) -> Iterator[Tuple[Optional[str], ResourceBase]]:
         """
         Get list of resource objects bound to Task
 

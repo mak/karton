@@ -252,7 +252,11 @@ class KartonTestCase(unittest.TestCase):
                     sha256=resource.sha256,
                     _flags=resource._flags,
                 )
-                payload_bag[key] = remote_resource
+                if key:
+                    payload_bag[key] = remote_resource
+                else:
+                    raise ValueError("unnamed resource")
+
         return task
 
     def run_task(self, task: Task) -> List[Task]:
