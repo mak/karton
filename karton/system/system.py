@@ -12,7 +12,7 @@ from karton.core.backend import (
 )
 from karton.core.base import KartonServiceBase
 from karton.core.config import Config
-from karton.core.task import Task, TaskState
+from karton.core.task import Task, TaskState, TaskPriority
 from karton.core.utils import StrictClassMethod
 
 
@@ -165,6 +165,13 @@ class SystemService(KartonServiceBase):
             self.last_gc_trigger = time.time()
 
     def route_task(self, task: Task, binds: List[KartonBind]) -> None:
+
+        def negotiate_task_prio(t, b):
+            # If task has manually set priority honor it, otherwise take one from service
+            if t.priority == TaskPriority.NORMAL and b.priority:
+                return b.priority
+            return t.priority
+
         # Performs routing of task
         self.log.info("[%s] Processing task %s", task.root_uid, task.uid)
         # store the producer-task relationship in redis for task tracking
@@ -180,6 +187,7 @@ class SystemService(KartonServiceBase):
                 routed_task.status = TaskState.SPAWNED
                 routed_task.last_update = time.time()
                 routed_task.headers.update({"receiver": identity})
+                routed_task.priority = negotiate_task_prio(routed_task, bind)
                 self.backend.register_task(routed_task, pipe=pipe)
                 self.backend.produce_routed_task(identity, routed_task, pipe=pipe)
                 self.backend.increment_metrics(

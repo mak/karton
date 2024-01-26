@@ -33,7 +33,7 @@ KARTON_OUTPUTS_NAMESPACE = "karton.outputs"
 
 KartonBind = namedtuple(
     "KartonBind",
-    ["identity", "info", "version", "persistent", "filters", "service_version"],
+    ["identity", "info", "version", "persistent", "filters", "service_version", "priority"],
 )
 
 
@@ -270,6 +270,7 @@ class KartonBackend:
                 "filters": bind.filters,
                 "persistent": bind.persistent,
                 "service_version": bind.service_version,
+                "priority": bind.priority,
             },
             sort_keys=True,
         )
@@ -294,6 +295,7 @@ class KartonBackend:
                 persistent=not identity.endswith(".test"),
                 filters=bind,
                 service_version=None,
+                priority=None
             )
         return KartonBind(
             identity=identity,
@@ -302,6 +304,7 @@ class KartonBackend:
             persistent=bind["persistent"],
             filters=bind["filters"],
             service_version=bind.get("service_version"),
+            priority=bind.get("priority")
         )
 
     @staticmethod

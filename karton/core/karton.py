@@ -13,7 +13,7 @@ from .backend import KartonBackend, KartonBind, KartonMetrics
 from .base import KartonBase, KartonServiceBase
 from .config import Config
 from .resource import LocalResource
-from .task import Task, TaskState
+from .task import Task, TaskState, TaskPriority
 from .utils import timeout
 
 
@@ -109,6 +109,7 @@ class Consumer(KartonServiceBase):
     filters: List[Dict[str, Any]] = []
     persistent: bool = True
     version: Optional[str] = None
+    priority: Optional[TaskPriority] = None
 
     def __init__(
         self,
@@ -214,6 +215,7 @@ class Consumer(KartonServiceBase):
             filters=self.filters,
             persistent=self.persistent,
             service_version=self.__class__.version,
+            priority=self.priority,
         )
 
     @classmethod
